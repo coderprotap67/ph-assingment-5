@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Github-Issues-Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+    <!-- Login Page -->
+    <div id="loginPage" class="flex items-center justify-center h-screen">
+        <div class="bg-white p-10 rounded-lg w-96 shadow">
+            <div class="flex flex-col items-center mb-6">
+                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" class="w-16 mb-2" />
+                <h1 class="text-2xl font-bold">GitHub Issues Tracker</h1>
+                <p class="text-gray-500 text-sm">Sign in to manage your issues</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <input id="username" type="text" placeholder="Enter Username"
+                        class="w-full border p-2 rounded focus:outline-blue-500">
+                    <p class="text-[10px] text-blue-500 mt-1">Default: admin</p>
+                </div>
+
+                <div>
+                    <input id="password" type="password" placeholder="Enter Password"
+                        class="w-full border p-2 rounded focus:outline-blue-500">
+                    <p class="text-[10px] text-blue-500 mt-1">Default: admin123</p>
+                </div>
+
+                <button onclick="login()"
+                    class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition font-semibold">
+                    Sign In
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainPage" class="hidden">
+        <nav class="bg-white shadow flex justify-between items-center px-8 py-4 sticky top-0 z-50">
+            <div class="flex items-center gap-2">
+                <img src="/assets/github-logo.png" class="w-8">
+                <h2 class="font-semibold text-lg">GitHub Issues Tracker</h2>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <input id="searchInput" type="text" oninput="searchIssue()" placeholder="Search issues..."
+                        class="border px-4 py-2 rounded w-64 focus:outline-blue-500">
+                </div>
+                <button class="bg-blue-600 text-white px-5 py-2 rounded shadow hover:bg-blue-700">
+                    + New Issue
+                </button>
+            </div>
+        </nav>
+
+
+
+        <main class="max-w-6xl mx-auto mt-6 px-4">
+            <div class="flex gap-4 mb-6">
+                <button id="allTab" onclick="loadIssues('all')"
+                    class="tab px-6 py-2 bg-blue-600 text-white rounded-lg font-medium transition shadow-sm">
+                    All
+                </button>
+                <button id="openTab" onclick="loadIssues('open')"
+                    class="tab px-6 py-2 bg-white text-gray-700 border border-blue-200 rounded-lg font-medium transition shadow-sm">
+                    Open
+                </button>
+                <button id="closedTab" onclick="loadIssues('closed')"
+                    class="tab px-6 py-2 bg-white text-gray-700 border border-blue-200 rounded-lg font-medium transition shadow-sm">
+                    Closed
+                </button>
+            </div>
+
+
+
+            <div class="bg-white border rounded-xl p-6 mb-8 flex flex-col md:flex-row justify-between items-center shadow-sm">
+                <div class="flex items-center gap-5">
+                    <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center text-blue-600">
+                        <img src="Aperture.png" alt="">
+                        <!-- <i class="fa-solid fa-circle-dot text-xl"></i> -->
+                    </div>
+                    <div>
+                        <h2 id="issueCountDisplay" class="font-bold text-2xl">0 Issues</h2>
+                        <p class="text-sm text-gray-400">Track and manage your project issues</p>
+                    </div>
+                </div>
+                <div class="flex gap-6 mt-4 md:mt-0">
+                    <div class="flex items-center gap-2 text-sm font-semibold">
+                        <span class="w-3 h-3 bg-green-500 rounded-full"></span> Open
+                    </div>
+                    <div class="flex items-center gap-2 text-sm font-semibold">
+                        <span class="w-3 h-3 bg-blue-500 rounded-full"></span> Closed
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div id="loader" class="hidden text-center py-20">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-blue-600 mb-2"></div>
+                <div class="text-lg text-blue-600 font-semibold">Loading Issues...</div>
+            </div>
+
+            <div id="issuesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            </div>
+        </main>
+    </div>
+
+
+
+    <div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[100] backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-xl w-full max-w-md shadow-2xl mx-4">
+            <h2 id="mTitle" class="text-xl font-bold mb-3 border-b pb-2"></h2>
+            <div class="space-y-2 text-sm">
+                <p id="mDesc" class="text-gray-600 mb-4 text-base leading-relaxed"></p>
+                <p class="flex justify-between border-b py-1"><b>Status:</b> <span id="mStatus" class="capitalize"></span></p>
+                <p class="flex justify-between border-b py-1"><b>Category:</b> <span id="mCategory" class="capitalize"></span></p>
+                <p class="flex justify-between border-b py-1"><b>Author:</b> <span id="mAuthor"></span></p>
+                <p class="flex justify-between border-b py-1"><b>Priority:</b> <span id="mPriority" class="capitalize"></span></p>
+                <p class="flex justify-between border-b py-1"><b>Created:</b> <span id="mDate"></span></p>
+            </div>
+            <button onclick="closeModal()" class="w-full mt-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API = "https://phi-lab-server.vercel.app/api/v1/lab/issues";
+        const container = document.getElementById("issuesContainer");
+        const loader = document.getElementById("loader");
+        const issueCountDisplay = document.getElementById("issueCountDisplay");
+
+        function login()
+         {
+            const user = document.getElementById("username").value;
+            const pass = document.getElementById("password").value;
+
+              if 
+            
+            (user === "admin" && pass === "admin123") 
+            {
+                document.getElementById("loginPage").classList.add("hidden");
+                document.getElementById("mainPage").classList.remove("hidden");
+                loadIssues("all");
+            } 
+                else 
+            {
+                alert("Wrong credentials! Try admin / admin123");
+            }
+        }
+
+        async function loadIssues(type) {
+            if
+             (!container)
+              return;
+
+
+            container.innerHTML = "";
+            loader.classList.remove("hidden");
+            setActive(type);
+            try {
+                const res = await fetch(API);
+                const data = await res.json();
+                let issues = data.data;
+
+                if
+
+                 (type === "open") issues = issues.filter(i => i.status === "open");
+
+                else if 
+
+                (type === "closed") issues = issues.filter(i => i.status === "closed");
+
+                issueCountDisplay.innerText = `${issues.length} Issues`;
+                renderIssues(issues);
+            }
+            
+            catch (error) 
+            
+            {
+                console.error("Error fetching data:", error);
+            }
+             finally 
+             
+             {
+                loader.classList.add("hidden");
+            }
+        }
+
+        function renderIssues(list) {
+            container.innerHTML = "";
+            if (list.length === 0) 
+            
+            {
+                container.innerHTML = "<p class='col-span-full text-center text-gray-500'>No issues found.</p>";
+                return;
+            }
+
+            list.forEach(issue => {
+                const div = document.createElement("div");
+                div.className = `bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer border-t-4 
+                                ${issue.status === "open" ? "border-green-500" : "border-blue-500"}`;
+
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="flex items-center gap-1">
+                             <i class="fa-solid ${issue.status === 'open' ? 'fa-circle-dot text-green-500' : 'fa-circle-check text-blue-500'} text-[10px]"></i>
+                             <span class="text-[10px] font-bold uppercase ${issue.status === 'open' ? 'text-green-500' : 'text-blue-500'}">${issue.status}</span>
+                        </span>
+                        <span class="text-[10px] font-bold uppercase bg-red-100 text-red-600 px-2 py-0.5 rounded">
+                            ${issue.priority}
+                        </span>
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-1 truncate">${issue.title}</h3>
+                    <p class="text-xs text-gray-500 mb-4 line-clamp-2">${issue.description}</p>
+                    <div class="flex gap-2 text-[10px] mb-4">
+                        <span class="bg-red-50 text-red-600 px-2 py-1 rounded flex items-center gap-1 font-semibold">
+                            <i class="fa-solid fa-bug"></i> BUG
+                        </span>
+                        <span class="bg-blue-50 text-blue-600 px-2 py-1 rounded flex items-center gap-1 font-semibold">
+                            <i class="fa-solid fa-hand"></i> HELP
+                        </span>
+                    </div>
+                    <div class="border-t pt-3 mt-auto">
+                        <p class="text-[10px] text-gray-500 font-medium">Author: ${issue.author}</p>
+                        <p class="text-[10px] text-gray-400">${new Date(issue.createdAt).toLocaleDateString()}</p>
+                    </div>`;
+
+                div.onclick = () => openModal(issue);
+                container.appendChild(div);
+            });
+        }
+
+        function setActive(type)
+         {
+            document.querySelectorAll(".tab").forEach(btn =>
+            
+            {
+                btn.classList.remove("bg-blue-600", "text-white");
+                btn.classList.add("bg-white", "text-gray-700", "border");
+            });
+
+            const activeTab = document.getElementById(`${type}Tab`);
+
+            if (activeTab) 
+            
+            {
+                activeTab.classList.remove("bg-white", "text-gray-700", "border");
+                activeTab.classList.add("bg-blue-600", "text-white");
+            }
+        }
+
+        async function searchIssue() {
+            const text = document.getElementById("searchInput").value.trim();
+            if (text === "") {
+                loadIssues("all");
+                return;
+            }
+
+            loader.classList.remove("hidden");
+            try 
+             {
+                const res = await fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${text}`);
+                const data = await res.json();
+                
+                if (data.data)
+                
+                {
+                    issueCountDisplay.innerText = `${data.data.length} Issues Found`;
+                    renderIssues(data.data);
+                }
+            } 
+            catch (error)
+
+             {
+                console.error("Search error:", error);
+            } 
+            finally 
+            
+            {
+                loader.classList.add("hidden");
+            }
+        }
+
+        function openModal(issue)
+         {
+            const modal = document.getElementById("modal");
+            
+            modal.classList.replace("hidden", "flex");
+
+            document.getElementById("mTitle").innerText = issue.title;
+
+            document.getElementById("mDesc").innerText = issue.description;
+
+            document.getElementById("mStatus").innerText = issue.status;
+
+            document.getElementById("mCategory").innerText = issue.category;
+
+            document.getElementById("mAuthor").innerText = issue.author;
+
+            document.getElementById("mPriority").innerText = issue.priority;
+
+            document.getElementById("mDate").innerText = new Date(issue.createdAt).toLocaleString();
+        }
+
+        function closeModal() {
+            document.getElementById("modal").classList.replace("flex", "hidden");
+        }
+    </script>
+</body>
+</html>
