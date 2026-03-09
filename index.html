@@ -157,7 +157,7 @@
 
         async function loadIssues(type) {
             if
-            
+
              (!container)
               return;
 
@@ -165,7 +165,9 @@
             container.innerHTML = "";
             loader.classList.remove("hidden");
             setActive(type);
-            try {
+            try 
+            
+                {
                 const res = await fetch(API);
                 const data = await res.json();
                 let issues = data.data;
