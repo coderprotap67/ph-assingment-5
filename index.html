@@ -208,7 +208,9 @@
                 return;
             }
 
-            list.forEach(issue => {
+            list.forEach(issue => 
+            
+             {
                 const div = document.createElement("div");
                 div.className = `bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer border-t-4 
                                 ${issue.status === "open" ? "border-green-500" : "border-blue-500"}`;
