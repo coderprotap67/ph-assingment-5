@@ -166,7 +166,7 @@
             loader.classList.remove("hidden");
             setActive(type);
             try 
-            
+
                 {
                 const res = await fetch(API);
                 const data = await res.json();
@@ -196,9 +196,11 @@
             }
         }
 
-        function renderIssues(list) {
+        function renderIssues(list)
+         {
             container.innerHTML = "";
-            if (list.length === 0) 
+            if
+            (list.length === 0) 
             
             {
                 container.innerHTML = "<p class='col-span-full text-center text-gray-500'>No issues found.</p>";
